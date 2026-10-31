@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Monokel.ico</ApplicationIcon>
     <AssemblyTitle>Monokel</AssemblyTitle>
     <Product>Monokel</Product>
     <Company>Eischet Software e.K.</Company>
@@ -15,5 +16,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>0.1.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Monokel.ico" LogicalName="Monokel.ico" />
+  </ItemGroup>
 
 </Project>

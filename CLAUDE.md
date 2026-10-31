@@ -12,4 +12,6 @@ Open Source (MIT, siehe `LICENSE`): keine Verweise auf nicht öffentliche Projek
 - Zoomtaste (Strg oder Windows) im Tray-Menü wählbar, gespeichert in `%APPDATA%\Monokel\settings.json`. Bei der
   Windows-Taste schiebt `WheelHook` eine unbelegte Taste (vkE8) ein, damit beim Loslassen kein Startmenü aufgeht.
 - Alle `Mag*`-Aufrufe laufen auf dem Magnifier-Thread (`Magnifier.cs`); der Hook-Callback muss sofort zurückkehren.
+- Programmsymbol: `src/Monokel/Monokel.ico` (EXE und Tray) wird mit `assets/make-ico.ps1` aus `assets/Monokel.png`
+  erzeugt; das PNG steht auch oben in der `README.md`.
 - `uiAccess="true"` (Zoomen auch über Admin-Fenstern/UAC) erst, wenn signiert und unter `Program Files` installiert.

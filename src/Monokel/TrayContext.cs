@@ -1,6 +1,3 @@
-using System.Drawing.Drawing2D;
-using static Monokel.NativeMethods;
-
 namespace Monokel;
 
 /// <summary>Monokel läuft ohne Fenster, nur mit einem Symbol im Infobereich.</summary>
@@ -16,7 +13,7 @@ internal sealed class TrayContext : ApplicationContext
     public TrayContext()
     {
         _hook = new WheelHook(_settings.Modifier, _magnifier.ZoomBy);
-        _icon = CreateMonocleIcon();
+        _icon = LoadTrayIcon();
 
         _modifierMenu = new ToolStripMenuItem("Zoomtaste");
         foreach (var modifier in Enum.GetValues<ZoomModifier>())
@@ -83,28 +80,10 @@ internal sealed class TrayContext : ApplicationContext
         base.ExitThreadCore();
     }
 
-    /// <summary>Vorläufiges Symbol, bis es ein richtiges .ico gibt: Glas mit Kettchen.</summary>
-    private static Icon CreateMonocleIcon()
+    /// <summary>Programmsymbol in der Größe, die der Infobereich bei der aktuellen DPI-Stufe braucht.</summary>
+    private static Icon LoadTrayIcon()
     {
-        using var bmp = new Bitmap(32, 32);
-        using (var g = Graphics.FromImage(bmp))
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            using var glass = new SolidBrush(Color.FromArgb(90, 170, 210, 255));
-            using var rim = new Pen(Color.FromArgb(40, 40, 40), 3f);
-            using var chain = new Pen(Color.Goldenrod, 2f) { DashStyle = DashStyle.Dot };
-            g.FillEllipse(glass, 3, 3, 20, 20);
-            g.DrawEllipse(rim, 3, 3, 20, 20);
-            g.DrawBezier(chain, 20, 21, 24, 26, 28, 24, 30, 31);
-        }
-        var handle = bmp.GetHicon();
-        try
-        {
-            return (Icon)Icon.FromHandle(handle).Clone();
-        }
-        finally
-        {
-            DestroyIcon(handle);
-        }
+        using var stream = typeof(TrayContext).Assembly.GetManifestResourceStream("Monokel.ico")!;
+        return new Icon(stream, SystemInformation.SmallIconSize);
     }
 }
