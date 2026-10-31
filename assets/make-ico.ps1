@@ -1,12 +1,14 @@
-# Erzeugt src/Monokel/Monokel.ico aus assets/Monokel.png (Aufruf: pwsh assets/make-ico.ps1).
+# Erzeugt aus assets/Monokel.png das Programmsymbol src/Monokel/Monokel.ico und das kleinere Bild
+# assets/Monokel-512.png für die README (Aufruf: pwsh assets/make-ico.ps1).
 param(
     [string]$Source = (Join-Path $PSScriptRoot 'Monokel.png'),
-    [string]$Target = (Join-Path $PSScriptRoot '..\src\Monokel\Monokel.ico')
+    [string]$Target = (Join-Path $PSScriptRoot '..\src\Monokel\Monokel.ico'),
+    [string]$Readme = (Join-Path $PSScriptRoot 'Monokel-512.png')
 )
 Add-Type -AssemblyName System.Drawing
-$sizes = 16, 20, 24, 32, 40, 48, 64, 256
 $src = [System.Drawing.Image]::FromFile((Resolve-Path $Source))
-$pngs = foreach ($s in $sizes) {
+
+function Resize([int]$s) {
     $bmp = New-Object System.Drawing.Bitmap $s, $s, ([System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.InterpolationMode = 'HighQualityBicubic'
@@ -15,6 +17,17 @@ $pngs = foreach ($s in $sizes) {
     $g.SmoothingMode = 'HighQuality'
     $g.DrawImage($src, 0, 0, $s, $s)
     $g.Dispose()
+    $bmp
+}
+
+# README zeigt 256 px breit, 512 px bleiben auf hochauflösenden Bildschirmen scharf
+$bmp = Resize 512
+$bmp.Save([System.IO.Path]::GetFullPath($Readme), [System.Drawing.Imaging.ImageFormat]::Png)
+$bmp.Dispose()
+
+$sizes = 16, 20, 24, 32, 40, 48, 64, 256
+$pngs = foreach ($s in $sizes) {
+    $bmp = Resize $s
     $ms = New-Object System.IO.MemoryStream
     $bmp.Save($ms, [System.Drawing.Imaging.ImageFormat]::Png)
     $bmp.Dispose()

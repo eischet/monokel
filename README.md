@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/Monokel.png" alt="Monokel: ein Adler mit Fliegerhaube, der durch ein Monokel schaut" width="256">
+  <img src="assets/Monokel-512.png" alt="Monokel: ein Adler mit Fliegerhaube, der durch ein Monokel schaut" width="256">
 </p>
 
 # Monokel
@@ -25,7 +25,8 @@ dotnet build
 dotnet run --project src/Monokel
 ```
 
-Das Programmsymbol `src/Monokel/Monokel.ico` wird aus `assets/Monokel.png` erzeugt:
+Das Programmsymbol `src/Monokel/Monokel.ico` und das Bild oben (`assets/Monokel-512.png`) werden aus
+`assets/Monokel.png` erzeugt:
 
 ```powershell
 pwsh assets/make-ico.ps1
