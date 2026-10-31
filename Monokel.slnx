@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Monokel/Monokel.csproj" />
+  </Folder>
+</Solution>
