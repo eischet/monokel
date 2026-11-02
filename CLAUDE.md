@@ -1,9 +1,9 @@
 # Monokel
 
 Bildschirmlupe für Windows nach dem Vorbild der macOS-Zoomfunktion: Strg + Mausrad/Touchpad zoomt
-stufenlos und weich um den Cursor herum. Eigenständiges Projekt, ohne Bezug zu den anderen Repos unter `C:\projects`.
+stufenlos und weich um den Cursor herum.
 
-Open Source (MIT, siehe `LICENSE`): keine Verweise auf nicht öffentliche Projekte einbringen.
+Open Source (MIT, siehe `LICENSE`).
 
 - C# / .NET 10, WinForms nur für das Tray-Symbol. Solution: `Monokel.slnx`, Projekt: `src/Monokel`.
 - Bauen: `dotnet build`, Starten: `dotnet run --project src/Monokel`.
