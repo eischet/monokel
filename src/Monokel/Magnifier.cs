@@ -112,17 +112,16 @@ internal sealed class Magnifier : IDisposable
     /// Proportionale Verfolgung: Der Ausschnitt wird so gelegt, dass der Cursor auf dem Bildschirm genau dort
     /// erscheint, wo er unvergrößert wäre. Dadurch bleibt der Punkt unter dem Cursor beim Zoomen stehen, und jeder
     /// Rand des Desktops ist erreichbar, indem man die Maus dorthin bewegt.
+    /// Die Vergrößerung wirkt auf den gesamten virtuellen Desktop, und Cursor wie Offset beziehen sich beide auf die
+    /// linke obere Ecke des primären Monitors. Die Formel gilt deshalb auf jedem Monitor unverändert, auch bei
+    /// negativen Koordinaten links oder oberhalb des primären.
     /// </summary>
     private static (float zoom, int x, int y) ComputeTransform(double zoom)
     {
-        // TODO: mehrere Monitore; vorerst nur der primäre Bildschirm.
-        var screen = Screen.PrimaryScreen!.Bounds;
         GetCursorPos(out var cursor);
-        var cx = Math.Clamp(cursor.X, screen.Left, screen.Right - 1);
-        var cy = Math.Clamp(cursor.Y, screen.Top, screen.Bottom - 1);
         var factor = 1 - 1 / zoom;
-        var x = screen.Left + (int)Math.Round((cx - screen.Left) * factor);
-        var y = screen.Top + (int)Math.Round((cy - screen.Top) * factor);
+        var x = (int)Math.Round(cursor.X * factor);
+        var y = (int)Math.Round(cursor.Y * factor);
         return ((float)zoom, x, y);
     }
 
