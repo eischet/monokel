@@ -13,8 +13,10 @@ zoomt stufenlos und weich um den Mauszeiger herum.
 - Monokel läuft ohne Fenster, nur mit einem Symbol im Infobereich. Dessen Menü bietet:
   - **Zoom zurücksetzen**
   - **Zoomtaste:** Strg oder Windows-Taste
+  - **Autostart:** Monokel mit Windows starten
   - **Beenden**
-- Die Einstellungen liegen in `%APPDATA%\Monokel\settings.json`.
+- Die Einstellungen liegen in der Registry unter `HKCU\Software\Monokel`, der Autostart-Eintrag unter
+  `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
 
 ## Bauen
 

@@ -1,3 +1,5 @@
+using System.Security;
+
 namespace Monokel;
 
 /// <summary>Monokel läuft ohne Fenster, nur mit einem Symbol im Infobereich.</summary>
@@ -9,6 +11,7 @@ internal sealed class TrayContext : ApplicationContext
     private readonly NotifyIcon _tray;
     private readonly Icon _icon;
     private readonly ToolStripMenuItem _modifierMenu;
+    private readonly ToolStripMenuItem _autostartItem;
 
     public TrayContext()
     {
@@ -24,9 +27,13 @@ internal sealed class TrayContext : ApplicationContext
             });
         }
 
+        _autostartItem = new ToolStripMenuItem("Autostart", null, (_, _) => ToggleAutostart());
+
         var menu = new ContextMenuStrip();
+        menu.Opening += (_, _) => UpdateAutostartDisplay();
         menu.Items.Add("Zoom zurücksetzen", null, (_, _) => _magnifier.Reset());
         menu.Items.Add(_modifierMenu);
+        menu.Items.Add(_autostartItem);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Beenden", null, (_, _) => ExitThread());
 
@@ -50,11 +57,34 @@ internal sealed class TrayContext : ApplicationContext
         _settings.Modifier = modifier;
         _hook.Modifier = modifier;
         UpdateModifierDisplay();
+        SaveWithErrorMessage(_settings.Save);
+    }
+
+    private void ToggleAutostart()
+    {
+        SaveWithErrorMessage(() => Autostart.Set(!_autostartItem.Checked));
+        UpdateAutostartDisplay();
+    }
+
+    private void UpdateAutostartDisplay()
+    {
         try
         {
-            _settings.Save();
+            _autostartItem.Checked = Autostart.IsEnabled;
         }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or SecurityException)
+        {
+            _autostartItem.Checked = false;
+        }
+    }
+
+    private static void SaveWithErrorMessage(Action save)
+    {
+        try
+        {
+            save();
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or SecurityException)
         {
             MessageBox.Show($"Einstellungen konnten nicht gespeichert werden:\n{e.Message}", "Monokel",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);

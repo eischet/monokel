@@ -1,5 +1,5 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Security;
+using Microsoft.Win32;
 
 namespace Monokel;
 
@@ -10,39 +10,36 @@ internal enum ZoomModifier
     Windows,
 }
 
-/// <summary>Benutzereinstellungen, gespeichert unter %APPDATA%\Monokel\settings.json.</summary>
+/// <summary>Benutzereinstellungen, gespeichert in der Registry unter HKCU\Software\Monokel.</summary>
 internal sealed class Settings
 {
-    private static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Monokel", "settings.json");
-
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
-    };
+    private const string KeyPath = @"Software\Monokel";
 
     public ZoomModifier Modifier { get; set; } = ZoomModifier.Control;
 
     public static Settings Load()
     {
+        var settings = new Settings();
         try
         {
-            if (File.Exists(FilePath))
+            using var key = Registry.CurrentUser.OpenSubKey(KeyPath);
+            if (key?.GetValue(nameof(Modifier)) is string value
+                && Enum.TryParse<ZoomModifier>(value, out var modifier)
+                && Enum.IsDefined(modifier))
             {
-                return JsonSerializer.Deserialize<Settings>(File.ReadAllText(FilePath), JsonOptions) ?? new Settings();
+                settings.Modifier = modifier;
             }
         }
-        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException)
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or SecurityException)
         {
-            // Defekte oder unlesbare Datei: mit Standardwerten weitermachen.
+            // Unlesbarer Schlüssel: mit Standardwerten weitermachen.
         }
-        return new Settings();
+        return settings;
     }
 
     public void Save()
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-        File.WriteAllText(FilePath, JsonSerializer.Serialize(this, JsonOptions));
+        using var key = Registry.CurrentUser.CreateSubKey(KeyPath);
+        key.SetValue(nameof(Modifier), Modifier.ToString());
     }
 }
